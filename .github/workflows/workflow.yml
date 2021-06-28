@@ -12,6 +12,9 @@ jobs:
     services:
       localstack:
         image: localstack/localstack
+        ports:
+          - 4566:4566
+          - 4571:4571
 
     steps:
       - name: Checkout
@@ -28,17 +31,17 @@ jobs:
       - name: NPM Test
         run: npm test
         env:
-          SQS_ENDPOINT: http://localstack:4566
-          S3_ENDPOINT: http://localstack:4566
+          SQS_ENDPOINT: http://localhost:4566
+          S3_ENDPOINT: http://localhost:4566
 
       - name: Wait for Localstack
         uses: jtalk/url-health-check-action@v1.5
         with:
-          url: http://localstack:4566/health
+          url: http://localhost:4566/health
           max-attempts: 60
           retry-delay: 5s
 
       - run: npm run system-test
         env:
-          SQS_ENDPOINT: http://localstack:4566
-          S3_ENDPOINT: http://localstack:4566
+          SQS_ENDPOINT: http://localhost:4566
+          S3_ENDPOINT: http://localhost:4566
