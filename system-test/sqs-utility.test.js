@@ -4,7 +4,7 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const sqsEndpoint = 'http://localhost:4576';
+const sqsEndpoint = 'http://localhost:4566';
 const sqs = new AWS.SQS({
     apiVersion: '2012-11-05',
     endpoint: sqsEndpoint,
