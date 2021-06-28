@@ -12,25 +12,32 @@ jobs:
     services:
       localstack:
         image: localstack/localstack
-        env:
-          HOSTNAME_EXTERNAL: localstack
-        ports:
-          - 4566:4566
-          - 4571:4571
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm test
+
+      - name: NPM Install
+        run: npm install
+
+      - name: NPM Test
+        run: npm test
         env:
           SQS_ENDPOINT: http://localstack:4566
           S3_ENDPOINT: http://localstack:4566
+
       - name: Wait for Localstack
-        run: timeout 300 sh -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localstack:4566/health)" != "200" ]]; do sleep 5; done' || false
+        uses: jtalk/url-health-check-action@v1.5
+        with:
+          url: http://localstack:4566/health
+          max-attempts: 60
+          retry-delay: 5s
+
       - run: npm run system-test
         env:
           SQS_ENDPOINT: http://localstack:4566
