@@ -14,7 +14,6 @@ const SqsModify = require('../SqsModify');
 beforeEach(() => {
     jest.clearAllMocks();
     global.console.error = jest.fn();
-    // global.console.error = jest.fn(global.console.error);
 });
 
 describe('modifyMessages', () => {
