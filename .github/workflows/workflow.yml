@@ -13,10 +13,7 @@ jobs:
       localstack:
         image: localstack/localstack
         env:
-          SERVICES: sqs
-          DEFAULT_REGION: eu-west-2
-          AWS_ACCESS_KEY_ID: localkey
-          AWS_SECRET_ACCESS_KEY: localsecret
+          HOSTNAME_EXTERNAL: localstack
         ports:
           - 4566:4566
           - 4571:4571
@@ -32,6 +29,8 @@ jobs:
         env:
           SQS_ENDPOINT: http://localstack:4566
           S3_ENDPOINT: http://localstack:4566
+      - name: Wait for Localstack
+        run: timeout 300 sh -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localstack:4566/health)" != "200" ]]; do sleep 5; done' || false
       - run: npm run system-test
         env:
           SQS_ENDPOINT: http://localstack:4566
